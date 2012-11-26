@@ -5,7 +5,7 @@
 
 /* Matrix data and settings*/
 
-#define NBSTATES 4
+#define NBSTATES 1
 #define MICROSEC 100
 
 /* STATES */

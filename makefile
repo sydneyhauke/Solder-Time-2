@@ -1,7 +1,7 @@
 # AVR-GCC Makefile
 
 PROJECT=ST2
-SOURCES=src/main.c src/hardwareFunctions.c src/display.c
+SOURCES=src/main.c src/hardwareFunctions.c src/display.c src/softwareFunctions.c
 DESTINATION=bin/
 CC=avr-gcc
 OBJCOPY=avr-objcopy

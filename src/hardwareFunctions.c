@@ -1,5 +1,8 @@
+#define F_CPU 8000000UL
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 #include "ST2.h"
 #include "hardwareFunctions.h"
 
@@ -36,7 +39,7 @@ void setup(void) {
 /* LED matrix updater.
  * Version that lights one entire LED column.
 */
-void matrix_update() {
+/*void matrix_update() {
     static uint8_t activeColumn = 0;
 
     PORTB = (PORTB & 0x80);                                    // Clear last column
@@ -58,14 +61,69 @@ void matrix_update() {
         activeColumn = 0;
     }
 
+}*/
+
+void matrix_update2() {
+    static uint8_t ROWBITINDEX = 0;
+    static uint8_t activeColumn = 0;
+
+    if(ROWBITINDEX >6)
+    {
+        activeColumn = activeColumn+1;                                              // Prep for next column
+        if(activeColumn >19)
+        {
+            activeColumn =0;
+        }
+
+        PORTB = (PORTB & 0x80);                                    // Clear last column
+        PORTC = (PORTC & 0xF0) | 0x0F;
+
+        if(activeColumn <16)                                                 // Matrix column (from 0 to 19)
+        {
+            PORTB = (PORTB & 0x7F); //| (0<<PORTB7);                 // Decode digit Col. 1 to 16 - Select De-Mux chip
+
+            PORTD = (PORTD & 0x0F) | (activeColumn << 4);                 // Decode address to 74HC154
+        }
+        else
+        {
+            PORTB =  (1<<PORTB7);                                          // Decode digit Col. 17 to 20 - UN-Select De-Mux chip
+
+            PORTC = (PORTC & 0xF0) | ~(1<<(activeColumn-16));              // Using PC0 to PC4 to address col. 17 to 20 directly
+        }
+
+        ROWBITINDEX = 0;
+
+    }
+    else
+    {
+        PORTB = (PORTB & 0x80);
+        if(LEDMAT[activeColumn] & (1 << ROWBITINDEX))
+        {
+            //      PORTB = (PORTB & B10000000);
+            PORTB |= (1 << ROWBITINDEX);
+        }
+
+        if(activeColumn <16)                                                 // Matrix column (from 0 to 19)
+        {
+            _delay_us(120);
+        }
+
+        ROWBITINDEX = ROWBITINDEX +1;
+    }
 }
+
 
 void sleepMode() {
 
 }
 
+uint8_t getFromRTC(uint8_t regAddr) {
+
+    return 0;
+}
+
 ISR(TIMER0_COMPA_vect) {
-    matrix_update();
+    matrix_update2();
 }
 
 ISR(INT0_vect) {
