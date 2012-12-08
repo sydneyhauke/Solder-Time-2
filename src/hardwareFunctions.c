@@ -34,36 +34,11 @@ void setup(void) {
     /* 2) Software settings */
     STATE = 0;
     buttonRequest = NIL;
+
+    display_clear();
 }
 
-/* LED matrix updater.
- * Version that lights one entire LED column.
-*/
-/*void matrix_update() {
-    static uint8_t activeColumn = 0;
-
-    PORTB = (PORTB & 0x80);                                    // Clear last column
-    PORTC = (PORTC & 0xF0) | 0x0F;
-    if(activeColumn < 16) {                           // Due to hardware reasons
-        PORTB = (PORTB & 0x7F);
-        PORTD = (PORTD & 0x0F) | (activeColumn << 4); // Change column
-    }
-    else {
-        PORTB =  (1 << PORTB7);                                                  
-        PORTC = (PORTC & 0xF0) | ~(1<<(activeColumn-16));
-
-    }
-
-    PORTB = (PORTB & 0x80) | (LEDMAT[activeColumn] & 0x7F);
-
-    activeColumn++;
-    if(activeColumn > 19) {
-        activeColumn = 0;
-    }
-
-}*/
-
-void matrix_update2() {
+void matrix_update() {
     static uint8_t ROWBITINDEX = 0;
     static uint8_t activeColumn = 0;
 
@@ -123,7 +98,7 @@ uint8_t getFromRTC(uint8_t regAddr) {
 }
 
 ISR(TIMER0_COMPA_vect) {
-    matrix_update2();
+    matrix_update();
 }
 
 ISR(INT0_vect) {

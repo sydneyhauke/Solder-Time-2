@@ -38,12 +38,9 @@ static void showTimeSub(void) {
     /*hours = getFromRTC(HOURS);
     minutes = getFromRTC(MINUTES);*/
     
-    //display_clear();
-    if(!already) {
-        display_figure(2, 1);
-        display_figure(7, 2);
-        display_figure(12, 3);
-        display_figure(17, 4);
+    if(already == 0) {
+        display_clear();
+        display_time(1, 6, 1, 5);
         already = 1;
     }
 }
