@@ -123,6 +123,10 @@ void display_clear() {
     }
 }
 
+void display_clear_line(uint8_t line){
+    LEDMAT[line] = 0;
+}
+
 void display_setPix(uint8_t x, uint8_t y, LOGIC logic) {
     if(logic == HIGH) {
         LEDMAT[x-1] |= (1 << y-1);
@@ -137,53 +141,48 @@ void display_time(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
     uint8_t x = 19;
 
     if(dig4 != 1) {
-        for(i = 3; i >= 1; i--) {
-            x = x - 1;
+        for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig4][i]));
         }
     }
-    else {
-        x = x - 1;
+    else if(dig4 == 1){
+        x = 17;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig4][2]));
     }
 
-
-    x = x - 1;
+    x = 15;
     if(dig3 != 1) {
-        for(i = 3; i >= 1; i--) {
-            x = x - 1;
+        for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig3][i]));
         }
     }
-    else {
-        x = x - 1;
+    else if(dig3 == 1){
+        x = x - 2;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig3][2]));
     }
 
-    x = x - 2;
-    LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+10][2]));
+    LEDMAT[10] = pgm_read_byte(&(CHARACTERS[digoffset+10][2]));
+    LEDMAT[9] = pgm_read_byte(&(CHARACTERS[digoffset+10][2]));
 
-    x = x - 1;
+    x = 8;
     if(dig2 != 1) {
-        for(i = 3; i >= 1; i--) {
-            x = x - 1;
+        for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig2][i]));
         }
     }
-    else {
-        x = x - 1;
+    else if(dig2 == 1){
+        x = 6;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig2][2]));
     }
 
-    x = x - 1;
+    x = 2;
     if(dig1 != 1) {
-        for(i = 3; i >= 1; i--) {
-            x = x - 1;
+        for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig1][i]));
         }
     }
-    else {
-        x = x - 1;
+    else if(dig1 == 1){
+        x = 4;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig1][2]));
     }
 }
