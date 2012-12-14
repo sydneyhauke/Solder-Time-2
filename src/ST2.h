@@ -6,7 +6,6 @@
 /* Matrix data and settings*/
 
 #define NBSTATES 1
-#define MICROSEC 100
 
 /* STATES */
 uint8_t STATE;
@@ -17,5 +16,10 @@ enum LOGIC {
     HIGH,
     LOW
 };
+
+uint8_t time_flag;
+uint8_t day_flag;
+uint8_t month_flag;
+uint8_t year_flag;
 
 #endif

@@ -1,7 +1,9 @@
 #include <avr/io.h>
+#include <avr/pgmspace.h>
+
 #include "ST2.h"
-#include "display.h"
 #include "hardwareFunctions.h"
+#include "softwareFunctions.h"
 
 static void loop(void) {
     if(buttonRequest == NEXTSTATE && STATE < NBSTATES) {

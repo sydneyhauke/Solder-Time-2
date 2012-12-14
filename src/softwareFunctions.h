@@ -2,9 +2,10 @@
 #define SW_FUNCTIONS
 
 void showTime(void);
-static void showTimeSub(void);
-static void showDateSub(void);
-static void showDaySub(void);
+void showTimeSub(void);
+void showMonthSub(void);
+void showDaySub(void);
+void showYearSub(void);
 void setTime(void);
 void setDate(void);
 void displayTime(void);
@@ -15,4 +16,5 @@ void setHourSub(void);
 void setDaySub(void);
 void setMonthSub(void);
 void setYearSub(void);
+
 #endif

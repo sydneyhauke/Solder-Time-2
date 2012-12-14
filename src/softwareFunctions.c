@@ -1,15 +1,14 @@
-#include <avr/io.h>
 #include "softwareFunctions.h"
 #include "hardwareFunctions.h"
 #include "ST2.h"
 #include "display.h"
 
 void showTime(void) {
-    if(buttonRequest == NEXTSUBSTATE && SUBSTATE < 3) {
+    if(buttonRequest == NEXTSUBSTATE && SUBSTATE < 4) {
         SUBSTATE++;
         buttonRequest = NIL;
     }
-    else if(buttonRequest == NEXTSUBSTATE) {
+    else if(buttonRequest == NEXTSUBSTATE && SUBSTATE >= 4) {
         SUBSTATE = 0;
         buttonRequest = NIL;
     }
@@ -19,44 +18,92 @@ void showTime(void) {
             SUBSTATE = 1;
             break;
         case 1:
+            year_flag = 1;
             showTimeSub();
             break;
         case 2:
-            showDateSub();
-            break;
-        case 3:
+            time_flag = 1;
             showDaySub();
             break;
+        case 3:
+            day_flag = 1;
+            showMonthSub();
+            break;
+        case 4:
+            month_flag = 1;
+            showYearSub();
+            break;
     }
 }
 
-static void showTimeSub(void) {
-    static uint8_t hours;
-    static uint8_t minutes;
-    static uint8_t already = 0;
+void showTimeSub(void) {
+    static uint8_t hours = 0;
+    static uint8_t minutes = 0;
+    static uint8_t prev_minutes = 1;
 
-    /*hours = getFromRTC(HOURS);
-    minutes = getFromRTC(MINUTES);*/
-    
-    if(already == 0) {
+    getFromRTC(MINUTES, &minutes);
+
+    if(prev_minutes != minutes || time_flag) {
+        prev_minutes = minutes;
+        time_flag = 0;
+        getFromRTC(HOURS, &hours);
+
         display_clear();
-        display_time(1, 6, 1, 5);
-        already = 1;
+        display_time(((hours & 0x30) >> 4), (hours & 0x0F), (minutes & 0x70) >> 4, (minutes & 0x0F));
     }
 }
 
-static void showDateSub(void) {
-    uint8_t month;
-    uint8_t year;
-    uint8_t day;
+void showMonthSub(void) {
+    static uint8_t month = 0;
+    static uint8_t prev_month = 0;
+    char * str;
+    uint8_t i = 0;
 
-    display_clear();
+    getFromRTC(MONTH, &month);
 
+    if(prev_month != month || month_flag) {
+        prev_month = month;
+        month_flag = 0;
+
+        /*while(pgm_read_byte(months[month-1][i]) != 0x00)
+            str[i] = pgm_read_byte(months[month-1][i++]);*/
+
+        display_clear();
+        display_string("Dec");
+    }
 }
 
-static void showDaySub(void) {
+void showYearSub(void) {
+    static uint8_t year = 0;
+    static uint8_t prev_year = 0;
 
-    display_clear();
+    getFromRTC(YEAR, &year);
+
+    if(prev_year != year) {
+        prev_year = year;
+
+        display_clear();
+        display_string("2012");
+    }
+}
+void showDaySub(void) {
+    static uint8_t day = 0;
+    static uint8_t prev_day = 0;
+    char * str;
+    uint8_t i = 0;
+
+    getFromRTC(DAY, &day);
+
+    if(prev_day != day || day_flag) {
+        prev_day = day;
+        day_flag = 0;
+
+        /*while(pgm_read_byte(days[day-1][i]) != 0x00)
+            str[i] = pgm_read_byte(days[day-1][i++]);*/
+
+        display_clear();
+        display_string("Mon");
+    }
 }
 
 void setTime(void) {
@@ -89,7 +136,6 @@ void setDate(void) {
 }
 
 void displayTime(void) {
-
 }
 
 void setMinuteSub(void) {

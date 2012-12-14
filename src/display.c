@@ -1,10 +1,36 @@
+#include <avr/io.h>
 #include <avr/pgmspace.h>
 
+#include "display.h"
 #include "hardwareFunctions.h"
 #include "ST2.h"
-#include "display.h"
 
 const uint8_t digoffset = 95;
+
+const char days[][3] PROGMEM = {
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+};
+
+const char months[][3] PROGMEM = {
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+};
 
 const uint8_t CHARACTERS[106][5] PROGMEM = {
     {0,0,0,0,0},            // Space
@@ -70,7 +96,7 @@ const uint8_t CHARACTERS[106][5] PROGMEM = {
     {2,4,8,16,32},           // back slash
     {0,65,65,127,0},         // ]
     {0,2,1,2,0},             // ^
-    {128,128,128,128,128},   // _
+    {64,64,64,64,64},   // _
     {0,0,1,2,0},             // `
     {112,72,72,40,120},       // a
     {126,48,72,72,48},        // b
@@ -101,19 +127,31 @@ const uint8_t CHARACTERS[106][5] PROGMEM = {
     {0,8,54,65,0},            // {
     {0,0,127,0,0},            // |
     {0,65,54,8,0},            // }
-      {16,8,24,16,8},           // ~
-      {0,62,34,62,0},            // 0
-      {0,0,62,0,0},              // 1
-      {0,58,42,46,0},            // 2
-      {0,42,42,62,0},            // 3
-      {0,14,8,62,0},             // 4
-      {0,46,42,58,0},            // 5
-      {0,62,42,58,0},            // 6
-      {0,2,2,62,0},              // 7
-      {0,62,42,62,0},            // 8
-      {0,14,10,62,0},            // 9
-      {0,0,20,0,0}              // :
+    {16,8,24,16,8},           // ~
+    {0,62,34,62,0},            // 0
+    {0,0,62,0,0},              // 1
+    {0,58,42,46,0},            // 2
+    {0,42,42,62,0},            // 3
+    {0,14,8,62,0},             // 4
+    {0,46,42,58,0},            // 5
+    {0,62,42,58,0},            // 6
+    {0,2,2,62,0},              // 7
+    {0,62,42,62,0},            // 8
+    {0,14,10,62,0},            // 9
+    {0,0,20,0,0}              // :
 };
+
+void display_string(const char * str) {
+    uint8_t i = 0;
+    uint8_t j = 0;
+    const char * str2 = "Mon";
+
+    for(j = 0; j < 3; j++) {
+        for(i = 0; i < 5; i++) {
+            LEDMAT[i+j*5] = pgm_read_byte(&(CHARACTERS[digoffset-32][i]));
+        }
+    }
+}
 
 void display_clear() {
     uint8_t i;
@@ -129,16 +167,16 @@ void display_clear_line(uint8_t line){
 
 void display_setPix(uint8_t x, uint8_t y, LOGIC logic) {
     if(logic == HIGH) {
-        LEDMAT[x-1] |= (1 << y-1);
+        LEDMAT[x-1] |= (1 << (y-1));
     } 
     else if (logic == LOW) {
-        LEDMAT[x-1] = LEDMAT[x-1] & ~(1 << y-1);
+        LEDMAT[x-1] = LEDMAT[x-1] & ~(1 << (y-1));
     }
 }
 
 void display_time(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
     uint8_t i;
-    uint8_t x = 19;
+    uint8_t x = 18;
 
     if(dig4 != 1) {
         for(i = 3; i >= 1; i--, x--) {
@@ -150,21 +188,21 @@ void display_time(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig4][2]));
     }
 
-    x = 15;
+    x = 14;
     if(dig3 != 1) {
         for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig3][i]));
         }
     }
     else if(dig3 == 1){
-        x = x - 2;
+        x = 13;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig3][2]));
     }
 
     LEDMAT[10] = pgm_read_byte(&(CHARACTERS[digoffset+10][2]));
     LEDMAT[9] = pgm_read_byte(&(CHARACTERS[digoffset+10][2]));
 
-    x = 8;
+    x = 7;
     if(dig2 != 1) {
         for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig2][i]));
@@ -175,14 +213,14 @@ void display_time(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig2][2]));
     }
 
-    x = 2;
+    x = 3;
     if(dig1 != 1) {
         for(i = 3; i >= 1; i--, x--) {
             LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig1][i]));
         }
     }
     else if(dig1 == 1){
-        x = 4;
+        x = 2;
         LEDMAT[x] = pgm_read_byte(&(CHARACTERS[digoffset+dig1][2]));
     }
 }
