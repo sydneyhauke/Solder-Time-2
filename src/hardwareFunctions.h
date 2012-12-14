@@ -3,8 +3,13 @@
 
 #include <avr/io.h>
 
+#define MICROSEC 100
 #define MAT_WIDTH 20
 #define MAT_HEIGHT 7
+
+#define SCL_CLOCK 100000L
+
+#define RTC_ADDRESS 0xD0
 
 #define SECONDS 0x00
 #define MINUTES 0x01
@@ -34,8 +39,16 @@ uint8_t LEDMAT[MAT_WIDTH];
 volatile enum BUTTON buttonRequest;
 
 void setup(void);
-void matrix_update(void);
 void sleepMode(void);
-uint8_t getFromRTC(uint8_t registerAddr);
+void setRTC(uint8_t regAddr, uint8_t byte);
+void getFromRTC(uint8_t regAddr, uint8_t * data);
+uint8_t twi_start(uint8_t address);
+void twi_start_wait(uint8_t deviceAddr);
+uint8_t twi_rep_start(uint8_t address);
+void twi_stop(void);
+uint8_t twi_write(uint8_t data);
+uint8_t twi_readAck(void);
+uint8_t twi_readNack(void);
+void matrix_update(void);
 
 #endif
