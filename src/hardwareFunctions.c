@@ -19,7 +19,7 @@ void setup(void) {
     DDRB = 0xFF;                                                 // Makes ROWS 1-7 + muxselect to output
     DDRC = 0x0F;                                                 // Makes COLUMN 17-20 to output
     DDRD = (1 << PD4) | (1 << PD5) | (1 << PD6) | (1 << PD7);    // Makes demux A,B,C,D to output
-    PORTD |= (1 << PD2) | (1 << PD3);                            // Enables pull-up for the 2 buttons
+    PORTD |= (1 << PD3);                                         // Enables pull-up for the button 1 according to the schematic
     
     /* 1.3) Timers settings */
     TCCR0A = (1 << WGM01);                                       // WGM01 : CTC (Clear timer on compare match)
